@@ -20,6 +20,7 @@ type Service interface {
 	Client(opts ...web.Option) *http.Client
 	Options() Options
 	Run() error
+	Shutdown() error
 }
 
 type Option func(o *Options)
@@ -27,14 +28,21 @@ type Runner func(addr ...string) (err error)
 
 var (
 	// For serving
-	DefaultName    = "gin-web"
-	DefaultVersion = "latest"
-	DefaultId      = uuid.New().String()
-	DefaultAddress = ":0"
+	_defaultName    = "gin-web"
+	_defaultVersion = "latest"
+	_defaultId      = uuid.New().String()
+	_defaultAddress = ":0"
 
 	// for registration
-	DefaultRegisterTTL      = time.Minute
-	DefaultRegisterInterval = time.Second * 15
+	_defaultRegisterTTL      = time.Minute
+	_defaultRegisterInterval = time.Second * 15
+
+	// http options.
+	_defaultReadTimeout     = 5 * time.Second
+	_defaultWriteTimeout    = 5 * time.Second
+
+	// shut time.
+	_defaultShutdownTimeout = 3 * time.Second
 )
 
 // NewService returns a new web.ServiceWrapper, for future use service for extend.

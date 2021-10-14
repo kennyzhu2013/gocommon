@@ -59,7 +59,7 @@ var (
 
 func NewSubscribeOptions(opts ...SubscribeOption) SubscribeOptions {
 	opt := SubscribeOptions{
-		AutoAck: true,
+		AutoAck: true, // open auto ack.
 	}
 
 	for _, o := range opts {

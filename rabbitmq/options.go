@@ -20,6 +20,7 @@ type requeueOnErrorKey struct{}
 type deliveryMode struct{}
 type externalAuth struct{}
 type durableExchange struct{}
+type kindExchange struct{}
 
 // DurableQueue creates a durable queue when subscribing.
 func DurableQueue() broker.SubscribeOption {
@@ -49,6 +50,11 @@ func RequeueOnError() broker.SubscribeOption {
 // Exchange is an option to set the Exchange
 func Exchange(e string) broker.Option {
 	return setBrokerOption(exchangeKey{}, e)
+}
+
+// Exchange is an option to set the Exchange
+func KindExchange(e string) broker.Option {
+	return setBrokerOption(kindExchange{}, e)
 }
 
 // PrefetchCount ...

@@ -11,6 +11,7 @@ import (
 	"common/log/newlog"
 	"common/registry"
 	"common/web"
+	"context"
 	"errors"
 	"fmt"
 	"github.com/gin-gonic/gin"
@@ -32,7 +33,9 @@ type service struct {
 	opts Options
 
 	// mux *http.ServeMux
-	mux *http.ServeMux
+	server *http.Server
+	notify  chan error
+
 	srv *registry.Service
 
 	sync.Mutex
@@ -43,7 +46,7 @@ func newService(opts ...Option) Service {
 	options := newOptions(opts...)
 	s := &service{
 		opts: options,
-		mux:  http.NewServeMux(),
+		// mux:  http.NewServeMux(),
 	}
 
 	if s.opts.ServiceInfo != nil {
@@ -91,6 +94,21 @@ func (s *service) genSrv() *registry.Service {
 
 	// format last address
 	s.opts.Address = addr + ":" + strconv.Itoa(port)
+
+	// create server.
+	if s.opts.Engine == nil {
+		gin.SetMode(gin.ReleaseMode)
+		s.opts.Engine = gin.Default()
+	}
+
+
+	s.notify = make(chan error, 1)
+	s.server = &http.Server{
+		Handler:      s.opts.Engine,
+		ReadTimeout:  s.opts.ReadTimeout,
+		WriteTimeout: s.opts.WriteTimeout,
+		Addr:         s.opts.Address,
+	}
 
 	return &registry.Service{
 		Name: s.opts.Name,
@@ -164,38 +182,21 @@ func (s *service) start() error {
 		return nil
 	}
 
-	if s.opts.Engine == nil {
-		gin.SetMode(gin.ReleaseMode)
-		s.opts.Engine = gin.Default()
-	}
 	if s.opts.Secure {
 		s.opts.Engine.Use(s.LoadTLS())
 		go func() {
-			err := s.opts.Engine.RunTLS(s.opts.Address, s.opts.TLSConfig.CertFile, s.opts.TLSConfig.KeyFile)
-			if err != nil {
-				fmt.Printf("service StartFail , listen https address:%s, err:%s, quit now!", s.opts.Address, err.Error())
-				log.Errorf("service StartFail ,listen https address:%v,  err:%v, quit now!", s.opts.Address, err)
-				os.Exit(-1)
-			}
+			s.notify <- s.server.ListenAndServeTLS(s.opts.TLSConfig.CertFile, s.opts.TLSConfig.KeyFile)
+			close(s.notify)
 		}()
 	} else {
 		go func() {
-			err := s.opts.Engine.Run(s.opts.Address)
-			if err != nil {
-				fmt.Printf("service StartFail , listen http address:%s, err:%s, quit now!", s.opts.Address, err.Error())
-				log.Errorf("service StartFail ,listen http address:%v,  err:%v, quit now!", s.opts.Address, err)
-				os.Exit(-1)
-			}
+			s.notify <- s.server.ListenAndServe()
+			close(s.notify)
 		}()
 	}
 
 	// s.exit = make(chan chan error, 1)
 	s.running = true
-	// go func() {
-	// 	ch := <-s.exit
-	//
-	// 	ch <-
-	// }()
 
 	log.Fatalf("Service StartSuccess ! Listening on %v", s.opts.Address)
 	fmt.Println("Service StartSuccess ! Listening on", s.opts.Address)
@@ -266,7 +267,12 @@ func (s *service) Run() error {
 		log.Infof("Received signal %v\n", sig)
 	// wait on context cancel
 	case <-s.opts.Context.Done():
+		s.Shutdown()
 		log.Info("Received context shutdown")
+	case err := <-s.notify:
+		fmt.Printf("service StartFail Notify, listen address:%s, err:%s, quit now!", s.opts.Address, err.Error())
+		log.Errorf("service StartFail Notify, listen address:%v,  err:%v, quit now!", s.opts.Address, err)
+		// os.Exit(-1)
 	}
 
 	// exit reg loop
@@ -277,6 +283,14 @@ func (s *service) Run() error {
 
 	s.stop()
 	return nil
+}
+
+// Safe: Shutdown with timeout-.
+func (s *service) Shutdown() error {
+	ctx, cancel := context.WithTimeout(context.Background(), s.opts.ShutdownTimeout)
+	defer cancel()
+
+	return s.server.Shutdown(ctx)
 }
 
 // Options returns the options for the given service

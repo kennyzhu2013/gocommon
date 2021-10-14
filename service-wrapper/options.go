@@ -42,6 +42,10 @@ type Options struct {
 
 	// Alternative Options
 	Context context.Context
+
+	ShutdownTimeout time.Duration
+	ReadTimeout  time.Duration
+	WriteTimeout time.Duration
 }
 
 type TLSFile struct {
@@ -51,13 +55,16 @@ type TLSFile struct {
 
 func newOptions(opts ...Option) Options {
 	opt := Options{
-		Name:             DefaultName,
-		Version:          DefaultVersion,
-		Id:               DefaultId,
-		Address:          DefaultAddress,
-		RegisterTTL:      DefaultRegisterTTL,
-		RegisterInterval: DefaultRegisterInterval,
+		Name:             _defaultName,
+		Version:          _defaultVersion,
+		Id:               _defaultId,
+		Address:          _defaultAddress,
+		RegisterTTL:      _defaultRegisterTTL,
+		RegisterInterval: _defaultRegisterInterval,
 		Context:          context.TODO(),
+		ShutdownTimeout:  _defaultShutdownTimeout,
+		ReadTimeout:      _defaultReadTimeout,
+		WriteTimeout:     _defaultWriteTimeout,
 	}
 
 	for _, o := range opts {
@@ -165,5 +172,26 @@ func Secure(b bool) Option {
 func TLSConfig(t TLSFile) Option {
 	return func(o *Options) {
 		o.TLSConfig = t
+	}
+}
+
+// ReadTimeout -.
+func ReadTimeout(timeout time.Duration) Option {
+	return func(o *Options) {
+		o.ReadTimeout = timeout
+	}
+}
+
+// WriteTimeout -.
+func WriteTimeout(timeout time.Duration) Option {
+	return func(o *Options) {
+		o.WriteTimeout = timeout
+	}
+}
+
+// ShutdownTimeout -.
+func ShutdownTimeout(timeout time.Duration) Option {
+	return func(o *Options) {
+		o.ShutdownTimeout = timeout
 	}
 }

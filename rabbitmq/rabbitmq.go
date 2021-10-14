@@ -144,6 +144,7 @@ func (s *subscriber) resubscribe() {
 		for d := range sub {
 			s.r.wg.Add(1)
 			go func(d amqp.Delivery) {
+				if !s.opts.AutoAck { _ = d.Ack(false) } // nolint:errcheck // autoAck : don't need this
 				s.fn(d)
 				s.r.wg.Done()
 			}(d)
@@ -323,6 +324,10 @@ func (r *rbroker) getExchange() exchange {
 
 	if d, ok := r.opts.Context.Value(durableExchange{}).(bool); ok {
 		ex.durable = d
+	}
+
+	if e, ok := r.opts.Context.Value(kindExchange{}).(string); ok {
+		ex.kind = e
 	}
 
 	return ex

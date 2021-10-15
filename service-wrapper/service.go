@@ -34,7 +34,7 @@ type service struct {
 
 	// mux *http.ServeMux
 	server *http.Server
-	notify  chan error
+	notify chan error
 
 	srv *registry.Service
 
@@ -100,7 +100,6 @@ func (s *service) genSrv() *registry.Service {
 		gin.SetMode(gin.ReleaseMode)
 		s.opts.Engine = gin.Default()
 	}
-
 
 	s.notify = make(chan error, 1)
 	s.server = &http.Server{
@@ -250,13 +249,15 @@ func (s *service) Run() error {
 		return err
 	}
 
-	if err := s.register(); err != nil {
-		return err
-	}
-
 	// start reg monitor loop
 	ex := make(chan bool)
-	go s.run(ex)
+	if s.opts.Registry != nil {
+		if err := s.register(); err != nil {
+			return err
+		}
+
+		go s.run(ex)
+	}
 
 	ch := make(chan os.Signal, 1)
 	signal.Notify(ch, syscall.SIGTERM, syscall.SIGINT, syscall.SIGKILL)
@@ -276,9 +277,11 @@ func (s *service) Run() error {
 	}
 
 	// exit reg loop
-	close(ex)
-	if err := s.deregister(); err != nil {
-		return err
+	if s.opts.Registry != nil {
+		close(ex)
+		if err := s.deregister(); err != nil {
+			return err
+		}
 	}
 
 	s.stop()

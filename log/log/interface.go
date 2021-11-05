@@ -23,21 +23,22 @@ func InitLogger(opts ...Option)  {
 // outer .interface...
 func Debug(args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Print(args)
+		// We write ... after v in the nested call to Sprintln to tell the compiler to treat v as a list of arguments; otherwise it would just pass v as a single slice argument.
+		fmt.Print(args...)
 		return
 	}
 	defaultLog.Debug(args)
 }
 func Info(args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Print(args)
+		fmt.Print(args...)
 		return
 	}
 	defaultLog.Info(args...)
 }
 func Error(args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Print(args)
+		fmt.Print(args...)
 		return
 	}
 	defaultLog.Error(args...)
@@ -45,7 +46,7 @@ func Error(args ...interface{}) {
 
 func Warn(args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Print(args)
+		fmt.Print(args...)
 		return
 	}
 	defaultLog.Warn(args...)
@@ -53,7 +54,7 @@ func Warn(args ...interface{}) {
 
 func Fatal(args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Print(args)
+		fmt.Print(args...)
 		return
 	}
 	defaultLog.Fatal(args...)
@@ -62,14 +63,14 @@ func Fatal(args ...interface{}) {
 // Formatted logger
 func Debugf(format string, args ...interface{}){
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.Debugf(format, args...)
 }
 func Infof(format string, args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.Infof(format, args...)
@@ -77,7 +78,7 @@ func Infof(format string, args ...interface{}) {
 
 func Warnf(format string, args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.Warnf(format, args...)
@@ -85,7 +86,7 @@ func Warnf(format string, args ...interface{}) {
 
 func Errorf(format string, args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.Errorf(format, args...)
@@ -101,7 +102,7 @@ func Fatalf(format string, args ...interface{}) {
 // Formatted logger
 func DebugK(key string, format string, args ...interface{}){
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.DebugK(key, format, args...)
@@ -109,7 +110,7 @@ func DebugK(key string, format string, args ...interface{}){
 
 func InfoK(key string, format string, args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.InfoK(key, format, args...)
@@ -117,7 +118,7 @@ func InfoK(key string, format string, args ...interface{}) {
 
 func WarnK(key string, format string, args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.WarnK(key, format, args...)
@@ -125,14 +126,14 @@ func WarnK(key string, format string, args ...interface{}) {
 
 func ErrorK(key string, format string, args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.ErrorK(key, format, args...)
 }
 func FatalK(key string, format string, args ...interface{}) {
 	if defaultLog == nil {
-		fmt.Printf(format, args)
+		fmt.Printf(format, args...)
 		return
 	}
 	defaultLog.FatalK(key, format, args...)

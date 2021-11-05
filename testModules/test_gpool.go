@@ -33,6 +33,7 @@ func main() {
 		demoFunc()
 		wg.Done()
 	}
+
 	for i := 0; i < runTimes; i++ {
 		wg.Add(1)
 		_ = gpool.Submit(syncCalculateSum)

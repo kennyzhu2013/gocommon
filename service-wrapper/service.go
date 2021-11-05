@@ -54,6 +54,14 @@ func newService(opts ...Option) Service {
 	} else {
 		s.srv = s.genSrv()
 	}
+
+	s.notify = make(chan error, 1)
+	s.server = &http.Server{
+		Handler:      s.opts.Engine,
+		ReadTimeout:  s.opts.ReadTimeout,
+		WriteTimeout: s.opts.WriteTimeout,
+		Addr:         s.opts.Address,
+	}
 	return s
 }
 
@@ -99,14 +107,6 @@ func (s *service) genSrv() *registry.Service {
 	if s.opts.Engine == nil {
 		gin.SetMode(gin.ReleaseMode)
 		s.opts.Engine = gin.Default()
-	}
-
-	s.notify = make(chan error, 1)
-	s.server = &http.Server{
-		Handler:      s.opts.Engine,
-		ReadTimeout:  s.opts.ReadTimeout,
-		WriteTimeout: s.opts.WriteTimeout,
-		Addr:         s.opts.Address,
 	}
 
 	return &registry.Service{

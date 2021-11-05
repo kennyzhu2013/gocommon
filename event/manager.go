@@ -34,6 +34,7 @@ type ManagerFace interface {
 type Manager struct {
 	sync.Mutex
 	// EnableLock enable lock on fire event.
+	// 只有动态添加删除listener时需要.
 	EnableLock bool
 
 	// name of the manager

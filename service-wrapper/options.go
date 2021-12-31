@@ -1,5 +1,5 @@
 /*
-@Time : 2019/5/13 10:37 
+@Time : 2019/5/13 10:37
 @Author : kenny zhu
 @File : options.go
 @Software: GoLand
@@ -20,16 +20,16 @@ type Options struct {
 	Advertise string
 
 	// service
-	Name      string
-	Version   string
-	Id        string
-	Metadata  map[string]string
-	Description      string
+	Name        string
+	Version     string
+	Id          string
+	Metadata    MetaData
+	Description string
 
 	// or service struct directly..
 	ServiceInfo *registry.Service
 
-	Registry registry.Registry
+	Registry         registry.Registry
 	RegisterTTL      time.Duration
 	RegisterInterval time.Duration
 
@@ -37,15 +37,15 @@ type Options struct {
 	Engine *gin.Engine
 
 	// https config
-	Secure      bool
-	TLSConfig   TLSFile
+	Secure    bool
+	TLSConfig TLSFile
 
 	// Alternative Options
 	Context context.Context
 
 	ShutdownTimeout time.Duration
-	ReadTimeout  time.Duration
-	WriteTimeout time.Duration
+	ReadTimeout     time.Duration
+	WriteTimeout    time.Duration
 }
 
 type TLSFile struct {
@@ -95,8 +95,8 @@ func Version(v string) Option {
 	}
 }
 
-// Metadata associated with the service
-func Metadata(md map[string]string) Option {
+// MetaData associated with the service
+func Metadata(md MetaData) Option {
 	return func(o *Options) {
 		o.Metadata = md
 	}
@@ -116,7 +116,7 @@ func Advertise(a string) Option {
 	}
 }
 
-func Description(a string) Option  {
+func Description(a string) Option {
 	return func(o *Options) {
 		o.Description = a
 	}

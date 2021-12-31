@@ -1,5 +1,5 @@
 /*
-@Time : 2019/5/13 10:36 
+@Time : 2019/5/13 10:36
 @Author : kenny zhu
 @File : wrapper.go
 @Software: GoLand
@@ -16,6 +16,7 @@ import (
 )
 
 // Service is a web service with service discovery built in
+// TODO: use client.Client
 type Service interface {
 	Client(opts ...web.Option) *http.Client
 	Options() Options
@@ -38,8 +39,8 @@ var (
 	_defaultRegisterInterval = time.Second * 15
 
 	// http options.
-	_defaultReadTimeout     = 5 * time.Second
-	_defaultWriteTimeout    = 5 * time.Second
+	_defaultReadTimeout  = 5 * time.Second
+	_defaultWriteTimeout = 5 * time.Second
 
 	// shut time.
 	_defaultShutdownTimeout = 3 * time.Second

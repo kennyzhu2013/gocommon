@@ -111,7 +111,7 @@ func (s *service) genSrv() *registry.Service {
 
 	return &registry.Service{
 		Name: s.opts.Name,
-		Metadata: map[string]string{
+		Metadata: MetaData{
 			"serverDescription": s.opts.Description, // server desc.
 		},
 		Nodes: []*registry.Node{
@@ -197,7 +197,7 @@ func (s *service) start() error {
 	// s.exit = make(chan chan error, 1)
 	s.running = true
 
-	log.Fatalf("Service StartSuccess ! Listening on %v", s.opts.Address)
+	log.Fatal("Service StartSuccess ! Listening on ", s.opts.Address)
 	fmt.Println("Service StartSuccess ! Listening on", s.opts.Address)
 	return nil
 }
@@ -234,6 +234,7 @@ func (s *service) LoadTLS() gin.HandlerFunc {
 }
 
 // for http-client, must add own rt.
+// TODO: use client.Client
 func (s *service) Client(opts ...web.Option) *http.Client {
 	// use random selector and  replace http.NewRoundTripper with web tripper
 	rt := web.NewRoundShardTripper(opts...)

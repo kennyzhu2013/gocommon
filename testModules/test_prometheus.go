@@ -9,9 +9,9 @@
 package main
 
 import (
+	"common/client"
 	"context"
 	"fmt"
-	"github.com/micro/go-micro/client"
 )
 
 type Test interface {

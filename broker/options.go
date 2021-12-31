@@ -54,7 +54,7 @@ type SubscribeOption func(*SubscribeOptions)
 type contextKeyT string
 
 var (
-	registryKey = contextKeyT("github.com/micro/go-micro/registry")
+	registryKey = contextKeyT("go-micro/registry")
 )
 
 func NewSubscribeOptions(opts ...SubscribeOption) SubscribeOptions {
@@ -75,7 +75,6 @@ func Addrs(addrs ...string) Option {
 		o.Addrs = addrs
 	}
 }
-
 
 // DisableAutoAck will disable auto acking of messages
 // after they have been handled.
